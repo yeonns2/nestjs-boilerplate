@@ -22,13 +22,13 @@ else
     docker-compose -p ${DOCKER_APP_NAME}-blue -f docker-compose.blue.yml up -d
 fi
 
-echo "> Start health check of Nest App at 'http://127.0.0.1:${TARGET_PORT}'..."
+echo "> Start health check of Nest App at 'http://127.0.0.1:${TARGET_PORT}/users'..."
 
 for RETRY_COUNT in `seq 1 10`
 do
     echo "> Retrying... (${RETRY_COUNT})"
 
-    RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:${TARGET_PORT})
+    RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:${TARGET_PORT}/users)
     
     if [ ${RESPONSE_CODE} -eq 200 ]; then
         echo "> New Nest App successfully running" 
