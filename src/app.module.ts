@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigProvider } from './config/typeorm.config';
-import { UsersModule } from './api/users/users.module';
+import { UsersModule } from './domain/users/users.module';
 
 @Module({
   imports: [
