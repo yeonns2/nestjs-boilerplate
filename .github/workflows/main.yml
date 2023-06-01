@@ -26,7 +26,7 @@ jobs:
         with:
           node-version: 16.16.0
 
-        #
+      # .env.prod 파일을 생성합니다.
       - name: Create env file
         working-directory: ./
         run: |
