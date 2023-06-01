@@ -10,15 +10,15 @@ TARGET_PORT=0
 TARGET_COLOR=""
 
 # Green Container가 존재하지 않으면 True
-if [ -z "$EXIST_GREEN" ]; then
+if [ -z "$EXIST_GREEN" ]; e then
     echo "> Start Green Container..."
     TARGET_PORT=3001
-    TARGET_COLOR="blue"
+    TARGET_COLOR="green"
     docker-compose -p ${DOCKER_APP_NAME}-green -f docker-compose.green.yml up -d
 else
     echo "> Start Blue Container..."
     TARGET_PORT=3002
-    TARGET_COLOR="green"
+    TARGET_COLOR="blue"
     docker-compose -p ${DOCKER_APP_NAME}-blue -f docker-compose.blue.yml up -d
 fi
 
