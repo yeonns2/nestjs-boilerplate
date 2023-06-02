@@ -65,8 +65,20 @@ jobs:
       - name: Request Deployment
         run: aws deploy create-deployment --application-name $AWS_CODEDEPLOY_APPLICATION_NAME --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name $AWS_CODEDEPLOY_DEPLOYMENT_GROUP_NAME --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
 
+      # 배포 결과를 Slack에 알림을 보냅니다.
+      - name: Slack - Send Message
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: workflow,job,commit,repo,author,took,ref
+          author_name: Backend - dev
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()
+
 env:
   S3_BUCKET_NAME: nest-deploy-bucket # S3 버킷 이름입니다.
   PROJECT_NAME: nest-app # S3 버킷 내 폴더 이름입니다. 임의로 정하면 알아서 생성해줍니다.
   AWS_CODEDEPLOY_APPLICATION_NAME: nest-app-codedeploy # CodeDeploy 애플리케이션 이름입니다.
   AWS_CODEDEPLOY_DEPLOYMENT_GROUP_NAME: nest-app-dev-group # CodeDeploy 배포 그룹 이름입니다.
+
