@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigProvider } from './config/typeorm.config';
 import { UsersModule } from './domain/users/users.module';
+import { BoardsModule } from './domain/boards/boards.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UsersModule } from './domain/users/users.module';
       useClass: TypeOrmConfigProvider,
     }),
     UsersModule,
+    BoardsModule,
   ],
   controllers: [],
   providers: [],
