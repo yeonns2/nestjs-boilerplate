@@ -1,0 +1,60 @@
+name: Deploy NestJS Application
+
+# main 브랜치로 push 혹은 pr이 날라와서 merge되면 workflow가 작동합니다.
+# workflow_dispatch는 수동으로 workflow를 작동시키도록 할 수 있도록 합니다.
+on:
+  pull_request:
+    branches: [main]
+
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 해당 workflow가 레포지토리에 접근할 수 있도록 해줍니다.
+      # 우리는 레포지토리의 소스를 빌드해야하기 때문에 이 액션을 사용해야합니다.
+      - name: Checkout Repository
+        uses: actions/checkout@v2.4.2
+
+      # 16.16.0 버전의 NodeJS를 세팅해줍니다.
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.4.1
+        with:
+          node-version: 16.16.0
+
+      # .env.prod 파일을 생성합니다.
+      - name: Create env file
+        working-directory: ./
+        run: |
+          touch .env.prod
+          cat << EOF >> .env.prod
+          ${{ secrets.ENV }}
+
+      # Dependency들을 설치합니다. yarn도 사용 가능합니다.
+      - name: Install Dependencies
+        run: npm install
+
+      # NestJS Application을 빌드합니다.
+      - name: Build a Nest Application
+        run: npm run build
+        shell: bash
+
+      # 빌드 결과를 Slack에 알림을 보냅니다.
+      - name: Slack - Send Message
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: workflow,job,commit,repo,author,took,ref
+          author_name: Backend - dev
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()
+
+env:
+  S3_BUCKET_NAME: nest-deploy-bucket # S3 버킷 이름입니다.
+  PROJECT_NAME: nest-app # S3 버킷 내 폴더 이름입니다. 임의로 정하면 알아서 생성해줍니다.
+  AWS_CODEDEPLOY_APPLICATION_NAME: nest-app-codedeploy # CodeDeploy 애플리케이션 이름입니다.
+  AWS_CODEDEPLOY_DEPLOYMENT_GROUP_NAME: nest-app-dev-group # CodeDeploy 배포 그룹 이름입니다.
+
